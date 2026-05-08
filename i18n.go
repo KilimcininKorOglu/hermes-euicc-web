@@ -19,6 +19,10 @@ var supportedLanguages = []LangInfo{
 	{Code: "en", Name: "English"},
 	{Code: "tr", Name: "Türkçe"},
 	{Code: "de", Name: "Deutsch"},
+	{Code: "fr", Name: "Français"},
+	{Code: "fi", Name: "Suomi"},
+	{Code: "da", Name: "Dansk"},
+	{Code: "pt", Name: "Português"},
 }
 
 const defaultLang = "en"
