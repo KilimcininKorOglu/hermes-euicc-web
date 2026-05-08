@@ -7,6 +7,37 @@
          hx-swap="innerHTML"></div>
 
     <div class="card">
+        <div class="card-title">{{call .T "download.qr_title"}}</div>
+        <div class="qr-actions">
+            <label class="btn" for="qr-file-input">
+                {{call .T "download.qr_upload"}}
+                <input type="file" id="qr-file-input" accept="image/*" onchange="handleQRFile(this)" style="display:none">
+            </label>
+            <button class="btn" id="qr-camera-btn" onclick="startCamera()">
+                {{call .T "download.qr_camera"}}
+            </button>
+            <button class="btn btn-danger" id="qr-camera-stop-btn" onclick="stopCamera()" style="display:none">
+                {{call .T "download.qr_camera_stop"}}
+            </button>
+        </div>
+
+        <div class="qr-preview-area">
+            <video id="qr-video" class="qr-video" style="display:none" playsinline></video>
+            <img id="qr-preview" class="qr-preview-img" style="display:none">
+            <canvas id="qr-canvas" style="display:none"></canvas>
+        </div>
+
+        <div id="qr-status" class="qr-status" style="display:none"
+             data-msg-scanning="{{call .T "download.qr_scanning"}}"
+             data-msg-found="{{call .T "download.qr_found"}}"
+             data-msg-not-found="{{call .T "download.qr_not_found"}}"
+             data-msg-invalid="{{call .T "download.qr_invalid"}}"
+             data-msg-camera-error="{{call .T "download.qr_camera_error"}}">
+        </div>
+        <div id="qr-decoded-text" class="monospace text-sm" style="display:none;margin-top:4px"></div>
+    </div>
+
+    <div class="card">
         <div class="card-title">{{call .T "download.manual_title"}}</div>
         <form hx-post="/api/download" hx-target="#download-result" hx-indicator="#download-spinner">
             <div class="form-group">
@@ -49,6 +80,9 @@
         </form>
         <div id="discovery-result"></div>
     </div>
+
+    <script src="/static/js/jsQR.min.js"></script>
+    <script src="/static/js/qr-scanner.js"></script>
 </div>{{end}}
 
 {{define "download_result"}}{{with .Data}}<div class="download-result">

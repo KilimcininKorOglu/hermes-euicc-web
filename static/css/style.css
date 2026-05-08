@@ -367,6 +367,47 @@ body {
     border-color: var(--color-warning);
 }
 
+/* QR Scanner */
+.qr-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.qr-preview-area {
+    margin-bottom: 8px;
+}
+
+.qr-video,
+.qr-preview-img {
+    max-width: 100%;
+    max-height: 300px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+}
+
+.qr-status {
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.qr-status-success {
+    background-color: rgba(25, 135, 84, 0.1);
+    color: var(--color-success);
+}
+
+.qr-status-scanning {
+    background-color: rgba(13, 110, 253, 0.1);
+    color: var(--color-primary);
+}
+
+.qr-status-error {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--color-danger);
+}
+
 /* Badges */
 .badge {
     display: inline-block;
