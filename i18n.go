@@ -23,6 +23,12 @@ var supportedLanguages = []LangInfo{
 	{Code: "fi", Name: "Suomi (Finland)"},
 	{Code: "da", Name: "Dansk (Denmark)"},
 	{Code: "pt", Name: "Português (Portugal)"},
+	{Code: "es", Name: "Español (Spain)"},
+	{Code: "it", Name: "Italiano (Italy)"},
+	{Code: "nl", Name: "Nederlands (Netherlands)"},
+	{Code: "pl", Name: "Polski (Poland)"},
+	{Code: "ru", Name: "Русский (Russia)"},
+	{Code: "zh", Name: "中文 (China)"},
 }
 
 const defaultLang = "en"
