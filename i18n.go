@@ -17,12 +17,12 @@ var localesFS embed.FS
 
 var supportedLanguages = []LangInfo{
 	{Code: "en", Name: "English"},
-	{Code: "tr", Name: "Turkish (Türkiye)"},
-	{Code: "de", Name: "German (Deutschland)"},
-	{Code: "fr", Name: "French (France)"},
-	{Code: "fi", Name: "Finnish (Suomi)"},
-	{Code: "da", Name: "Danish (Danmark)"},
-	{Code: "pt", Name: "Portuguese (Portugal)"},
+	{Code: "tr", Name: "Türkçe (Turkey)"},
+	{Code: "de", Name: "Deutsch (Germany)"},
+	{Code: "fr", Name: "Français (France)"},
+	{Code: "fi", Name: "Suomi (Finland)"},
+	{Code: "da", Name: "Dansk (Denmark)"},
+	{Code: "pt", Name: "Português (Portugal)"},
 }
 
 const defaultLang = "en"
