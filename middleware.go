@@ -6,6 +6,7 @@ package main
 import (
 	"context"
 	"net/http"
+	"strings"
 )
 
 type contextKey string
@@ -49,12 +50,31 @@ func preferencesMiddleware(i18n *I18n, next http.Handler) http.Handler {
 			if i18n.IsSupported(c.Value) {
 				lang = c.Value
 			}
+		} else {
+			lang = detectBrowserLang(r, i18n)
 		}
 
 		ctx := context.WithValue(r.Context(), ctxTheme, theme)
 		ctx = context.WithValue(ctx, ctxLang, lang)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func detectBrowserLang(r *http.Request, i18n *I18n) string {
+	accept := r.Header.Get("Accept-Language")
+	if accept == "" {
+		return defaultLang
+	}
+	for _, part := range strings.Split(accept, ",") {
+		tag := strings.TrimSpace(strings.SplitN(part, ";", 2)[0])
+		if i18n.IsSupported(tag) {
+			return tag
+		}
+		if base, _, ok := strings.Cut(tag, "-"); ok && i18n.IsSupported(base) {
+			return base
+		}
+	}
+	return defaultLang
 }
 
 func setPreferenceCookie(w http.ResponseWriter, name, value string) {
