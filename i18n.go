@@ -29,6 +29,19 @@ var supportedLanguages = []LangInfo{
 	{Code: "pl", Name: "Polski (Poland)"},
 	{Code: "ru", Name: "Русский (Russia)"},
 	{Code: "zh", Name: "中文 (China)"},
+	{Code: "ja", Name: "日本語 (Japan)"},
+	{Code: "ko", Name: "한국어 (Korea)"},
+	{Code: "sv", Name: "Svenska (Sweden)"},
+	{Code: "no", Name: "Norsk (Norway)"},
+	{Code: "cs", Name: "Čeština (Czechia)"},
+	{Code: "hu", Name: "Magyar (Hungary)"},
+	{Code: "ro", Name: "Română (Romania)"},
+	{Code: "uk", Name: "Українська (Ukraine)"},
+	{Code: "el", Name: "Ελληνικά (Greece)"},
+	{Code: "id", Name: "Bahasa (Indonesia)"},
+	{Code: "th", Name: "ไทย (Thailand)"},
+	{Code: "vi", Name: "Tiếng Việt (Vietnam)"},
+	{Code: "hi", Name: "हिन्दी (India)"},
 }
 
 const defaultLang = "en"
