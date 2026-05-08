@@ -1,0 +1,110 @@
+{{define "notifications"}}<div class="page">
+    <h2>{{call .T "notifications.title"}}</h2>
+    <div id="notifications-content"
+         hx-get="/api/notifications"
+         hx-trigger="load"
+         hx-indicator="#notifications-spinner">
+        <div class="placeholder" id="notifications-spinner">
+            <span class="spinner"></span> {{call .T "notifications.loading"}}
+        </div>
+    </div>
+</div>{{end}}
+
+{{define "notifications_table"}}<div id="notifications-content">
+    {{$notifications := .Data}}
+    {{if not $notifications}}
+    <div class="placeholder">{{call .T "notifications.empty"}}</div>
+    {{else}}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{{call .T "notifications.col_seq"}}</th>
+                    <th>{{call .T "notifications.col_iccid"}}</th>
+                    <th>{{call .T "notifications.col_operation"}}</th>
+                    <th>{{call .T "notifications.col_address"}}</th>
+                    <th>{{call .T "profiles.col_actions"}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range $notifications}}
+                <tr>
+                    <td>{{.SequenceNumber}}</td>
+                    <td class="monospace text-sm">{{.ICCID}}</td>
+                    <td>
+                        {{if eq .ProfileManagementOperation 1}}<span class="badge badge-success">INSTALL</span>
+                        {{else if eq .ProfileManagementOperation 2}}<span class="badge badge-success">ENABLE</span>
+                        {{else if eq .ProfileManagementOperation 4}}<span class="badge badge-secondary">DISABLE</span>
+                        {{else if eq .ProfileManagementOperation 8}}<span class="badge badge-danger">DELETE</span>
+                        {{else}}<span class="badge badge-secondary">{{.ProfileManagementOperation}}</span>
+                        {{end}}
+                    </td>
+                    <td class="text-sm">{{.Address}}</td>
+                    <td class="actions-cell">
+                        <button class="btn btn-sm btn-primary"
+                                hx-post="/api/notifications/{{.SequenceNumber}}/handle"
+                                hx-target="#notifications-content"
+                                hx-confirm="{{call $.T "notifications.confirm_handle"}}">
+                            {{call $.T "notifications.handle"}}
+                        </button>
+                        <button class="btn btn-sm btn-danger"
+                                hx-post="/api/notifications/{{.SequenceNumber}}/remove"
+                                hx-target="#notifications-content"
+                                hx-confirm="{{call $.T "notifications.confirm_remove"}}">
+                            {{call $.T "notifications.remove"}}
+                        </button>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+    {{end}}
+
+    <div class="actions-bar">
+        <button class="btn"
+                hx-get="/api/notifications"
+                hx-target="#notifications-content">
+            {{call .T "common.refresh"}}
+        </button>
+        {{if $notifications}}
+        <button class="btn btn-primary"
+                hx-post="/api/notifications/process-all"
+                hx-target="#notifications-content"
+                hx-confirm="{{call .T "notifications.confirm_process_all"}}">
+            {{call .T "notifications.process_all"}}
+        </button>
+        {{end}}
+    </div>
+</div>{{end}}
+
+{{define "notifications_error"}}<div id="notifications-content">
+    <div class="alert alert-danger">{{.Data}}</div>
+    <button class="btn btn-primary"
+            hx-get="/api/notifications"
+            hx-target="#notifications-content">
+        {{call .T "common.retry"}}
+    </button>
+</div>{{end}}
+
+{{define "notifications_process_result"}}<div id="notifications-content">
+    {{with .Data}}
+    <div class="alert alert-success">
+        {{call $.T "notifications.processed_summary"}}:
+        {{.Processed}}/{{.Total}} {{call $.T "notifications.processed"}}
+        {{if gt .Failed 0}}, {{.Failed}} {{call $.T "notifications.failed"}}{{end}}
+    </div>
+    {{if .FailedList}}
+    <div class="alert alert-danger">
+        {{range .FailedList}}
+        <div>#{{.SequenceNumber}}: {{.Error}}</div>
+        {{end}}
+    </div>
+    {{end}}
+    {{end}}
+    <button class="btn btn-primary"
+            hx-get="/api/notifications"
+            hx-target="#notifications-content">
+        {{call .T "common.refresh"}}
+    </button>
+</div>{{end}}

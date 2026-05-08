@@ -1,0 +1,99 @@
+{{define "download"}}<div class="page">
+    <h2>{{call .T "download.title"}}</h2>
+
+    <div id="storage-check"
+         hx-get="/api/storage-check"
+         hx-trigger="load"
+         hx-swap="innerHTML"></div>
+
+    <div class="card">
+        <div class="card-title">{{call .T "download.manual_title"}}</div>
+        <form hx-post="/api/download" hx-target="#download-result" hx-indicator="#download-spinner">
+            <div class="form-group">
+                <label class="form-label" for="activation_code">{{call .T "download.activation_code"}}</label>
+                <input type="text" id="activation_code" name="activation_code"
+                       class="form-input" placeholder="LPA:1$smdp.example.com$ACTIVATION-CODE"
+                       required>
+                <div class="form-hint">{{call .T "download.activation_code_hint"}}</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="confirmation_code">{{call .T "download.confirmation_code"}}</label>
+                <input type="text" id="confirmation_code" name="confirmation_code"
+                       class="form-input" placeholder="{{call .T "download.confirmation_code_hint"}}">
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <span class="htmx-indicator" id="download-spinner"><span class="spinner"></span></span>
+                    {{call .T "download.submit"}}
+                </button>
+            </div>
+        </form>
+        <div id="download-result"></div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">{{call .T "download.discovery_title"}}</div>
+        <form hx-post="/api/discovery" hx-target="#discovery-result" hx-indicator="#discovery-spinner">
+            <div class="form-group">
+                <label class="form-label" for="smds_server">{{call .T "download.smds_server"}}</label>
+                <input type="text" id="smds_server" name="server"
+                       class="form-input" placeholder="lpa.ds.gsma.com">
+                <div class="form-hint">{{call .T "download.smds_hint"}}</div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <span class="htmx-indicator" id="discovery-spinner"><span class="spinner"></span></span>
+                    {{call .T "download.discover"}}
+                </button>
+            </div>
+        </form>
+        <div id="discovery-result"></div>
+    </div>
+</div>{{end}}
+
+{{define "download_result"}}{{with .Data}}<div class="download-result">
+    {{if eq (index . "status") "success"}}
+    <div class="alert alert-success">{{index . "message"}}</div>
+    {{else}}
+    <div class="alert alert-danger">{{index . "message"}}</div>
+    {{end}}
+</div>{{end}}{{end}}
+
+{{define "discovery_result"}}{{with .Data}}
+    {{if index . "error"}}
+    <div class="alert alert-danger">{{index . "error"}}</div>
+    {{else}}
+        {{$discoveries := index . "discoveries"}}
+        {{if not $discoveries}}
+        <div class="alert alert-success">{{call $.T "download.no_profiles_found"}}</div>
+        {{else}}
+        <div class="discovery-list">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>{{call $.T "download.event_id"}}</th>
+                        <th>{{call $.T "download.smdp_address"}}</th>
+                        <th>{{call $.T "profiles.col_actions"}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{range $discoveries}}
+                    <tr>
+                        <td class="monospace text-sm">{{.EventID}}</td>
+                        <td>{{.Address}}</td>
+                        <td>
+                            <form hx-post="/api/download" hx-target="#download-result" style="display:inline">
+                                <input type="hidden" name="activation_code" value="LPA:1${{.Address}}${{.EventID}}">
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    {{call $.T "download.download_this"}}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+        {{end}}
+    {{end}}
+{{end}}{{end}}

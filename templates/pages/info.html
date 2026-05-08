@@ -1,0 +1,148 @@
+{{define "info"}}<div class="page">
+    <h2>{{call .T "info.title"}}</h2>
+    <div id="info-content"
+         hx-get="/api/info"
+         hx-trigger="load"
+         hx-indicator="#info-spinner">
+        <div class="placeholder" id="info-spinner">
+            <span class="spinner"></span> {{call .T "info.loading"}}
+        </div>
+    </div>
+</div>{{end}}
+
+{{define "info_content"}}<div id="info-content">
+    <div class="card">
+        <div class="card-title">{{call .T "info.chip_info"}}</div>
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td class="info-label">{{call .T "info.eid"}}</td>
+                    <td class="info-value monospace">{{(.Data).EID}}</td>
+                </tr>
+                {{with (.Data).EUICCInfo2}}
+                <tr>
+                    <td class="info-label">{{call $.T "info.firmware"}}</td>
+                    <td class="info-value">{{.EUICCFirmwareVer}}</td>
+                </tr>
+                <tr>
+                    <td class="info-label">{{call $.T "info.svn"}}</td>
+                    <td class="info-value">{{.SVN}}</td>
+                </tr>
+                <tr>
+                    <td class="info-label">{{call $.T "info.profile_version"}}</td>
+                    <td class="info-value">{{.ProfileVersion}}</td>
+                </tr>
+                <tr>
+                    <td class="info-label">{{call $.T "info.gp_version"}}</td>
+                    <td class="info-value">{{.GlobalPlatformVersion}}</td>
+                </tr>
+                <tr>
+                    <td class="info-label">{{call $.T "info.pp_version"}}</td>
+                    <td class="info-value">{{.PPVersion}}</td>
+                </tr>
+                {{with .ExtCardResource}}
+                <tr>
+                    <td class="info-label">{{call $.T "info.free_nvm"}}</td>
+                    <td class="info-value">{{.FreeNonVolatileMemory}} bytes</td>
+                </tr>
+                <tr>
+                    <td class="info-label">{{call $.T "info.free_ram"}}</td>
+                    <td class="info-value">{{.FreeVolatileMemory}} bytes</td>
+                </tr>
+                <tr>
+                    <td class="info-label">{{call $.T "info.installed_apps"}}</td>
+                    <td class="info-value">{{.InstalledApplication}}</td>
+                </tr>
+                {{end}}
+                {{if .SASAccreditationNumber}}
+                <tr>
+                    <td class="info-label">{{call $.T "info.sas"}}</td>
+                    <td class="info-value">{{.SASAccreditationNumber}}</td>
+                </tr>
+                {{end}}
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+
+    {{with (.Data).ConfiguredAddresses}}
+    <div class="card">
+        <div class="card-title">{{call $.T "info.configured_addresses"}}</div>
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td class="info-label">{{call $.T "info.default_smdp"}}</td>
+                    <td class="info-value">{{if .DefaultSMDPAddress}}{{.DefaultSMDPAddress}}{{else}}<span class="text-secondary">—</span>{{end}}</td>
+                </tr>
+                <tr>
+                    <td class="info-label">{{call $.T "info.root_smds"}}</td>
+                    <td class="info-value">{{if .RootSMDSAddress}}{{.RootSMDSAddress}}{{else}}<span class="text-secondary">—</span>{{end}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {{end}}
+
+    <div class="card">
+        <div class="card-title">{{call .T "info.advanced_commands"}}</div>
+
+        <div class="form-group">
+            <label class="form-label">{{call .T "info.set_default_dp"}}</label>
+            <div class="inline-form">
+                <input type="text" id="default-dp-address" class="form-input" placeholder="smdp.example.com">
+                <button class="btn btn-primary"
+                        onclick="setDefaultDP()"
+                        id="set-dp-btn">
+                    {{call .T "common.save"}}
+                </button>
+            </div>
+            <div id="set-dp-result"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{call .T "info.challenge"}}</label>
+            <button class="btn"
+                    hx-get="/api/info/challenge"
+                    hx-target="#challenge-result">
+                {{call .T "info.get_challenge"}}
+            </button>
+            <div id="challenge-result"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">{{call .T "info.memory_reset"}}</label>
+            <div class="form-hint">{{call .T "info.memory_reset_warning"}}</div>
+            <button class="btn btn-danger"
+                    onclick="confirmMemoryReset()">
+                {{call .T "info.memory_reset_btn"}}
+            </button>
+            <div id="memory-reset-result"></div>
+        </div>
+    </div>
+
+    <script>
+    function setDefaultDP() {
+        var addr = document.getElementById('default-dp-address').value;
+        if (!addr) return;
+        htmx.ajax('POST', '/api/info/set-default-dp', {target: '#set-dp-result', values: {address: addr}});
+    }
+    function confirmMemoryReset() {
+        if (!confirm('{{call .T "info.memory_reset_confirm1"}}')) return;
+        var input = prompt('{{call .T "info.memory_reset_confirm2"}}');
+        if (input !== 'RESET') return;
+        htmx.ajax('POST', '/api/info/memory-reset', {target: '#memory-reset-result'});
+    }
+    </script>
+</div>{{end}}
+
+{{define "challenge_result"}}<div class="alert alert-success monospace" style="margin-top:8px;word-break:break-all">{{.Data}}</div>{{end}}
+
+{{define "info_error"}}<div id="info-content">
+    <div class="alert alert-danger">{{.Data}}</div>
+    <button class="btn btn-primary"
+            hx-get="/api/info"
+            hx-target="#info-content"
+            hx-indicator="#info-content">
+        {{call .T "common.retry"}}
+    </button>
+</div>{{end}}

@@ -1,0 +1,7 @@
+{{define "lang_switcher"}}<form class="lang-switcher" hx-post="/api/lang" hx-swap="none">
+    <select name="lang" onchange="this.form.requestSubmit()" class="lang-select">
+        {{$currentLang := .Lang}}
+        {{range .Languages}}<option value="{{.Code}}"{{if eq .Code $currentLang}} selected{{end}}>{{.Name}}</option>
+        {{end}}
+    </select>
+</form>{{end}}

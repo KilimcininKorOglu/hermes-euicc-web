@@ -1,0 +1,123 @@
+{{define "profiles"}}<div class="page">
+    <h2>{{call .T "profiles.title"}}</h2>
+    <div id="profiles-content"
+         hx-get="/api/profiles"
+         hx-trigger="load"
+         hx-indicator="#profiles-spinner">
+        <div class="placeholder" id="profiles-spinner">
+            <span class="spinner"></span> {{call .T "profiles.loading"}}
+        </div>
+    </div>
+</div>{{end}}
+
+{{define "profiles_table"}}<div id="profiles-content">
+    {{if (.Data).RebootNeeded}}
+    <div class="alert alert-warning">
+        {{call .T "profiles.reboot_needed"}}
+        <button class="btn btn-sm btn-warning"
+                hx-post="/api/reboot"
+                hx-target="#reboot-result"
+                hx-confirm="{{call .T "profiles.confirm_reboot"}}"
+                style="margin-left:8px">
+            {{call .T "profiles.reboot_btn"}}
+        </button>
+        <span id="reboot-result"></span>
+    </div>
+    {{end}}
+
+    {{$profiles := (.Data).Profiles}}
+    {{if not $profiles}}
+    <div class="placeholder">{{call .T "profiles.empty"}}</div>
+    {{else}}
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>{{call .T "profiles.col_name"}}</th>
+                    <th>{{call .T "profiles.col_provider"}}</th>
+                    <th>{{call .T "profiles.col_iccid"}}</th>
+                    <th>{{call .T "profiles.col_status"}}</th>
+                    <th>{{call .T "profiles.col_actions"}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range $profiles}}
+                <tr>
+                    <td>
+                        <div class="profile-name">{{if .ProfileNickname}}{{.ProfileNickname}}{{else}}{{.ProfileName}}{{end}}</div>
+                        {{if and .ProfileNickname .ProfileName}}<div class="text-secondary text-sm">{{.ProfileName}}</div>{{end}}
+                    </td>
+                    <td>{{.ServiceProviderName}}</td>
+                    <td class="monospace text-sm">{{.ICCID}}</td>
+                    <td>
+                        {{if eq .ProfileState 1}}
+                        <span class="badge badge-success">{{call $.T "profiles.enabled"}}</span>
+                        {{else}}
+                        <span class="badge badge-secondary">{{call $.T "profiles.disabled"}}</span>
+                        {{end}}
+                    </td>
+                    <td class="actions-cell">
+                        {{if eq .ProfileState 1}}
+                        <button class="btn btn-sm"
+                                hx-post="/api/profiles/{{.ICCID}}/disable"
+                                hx-target="#profiles-content"
+                                hx-confirm="{{call $.T "profiles.confirm_disable"}}">
+                            {{call $.T "profiles.disable"}}
+                        </button>
+                        {{else}}
+                        <button class="btn btn-sm btn-primary"
+                                hx-post="/api/profiles/{{.ICCID}}/enable"
+                                hx-target="#profiles-content"
+                                hx-confirm="{{call $.T "profiles.confirm_enable"}}">
+                            {{call $.T "profiles.enable"}}
+                        </button>
+                        {{end}}
+                        <button class="btn btn-sm"
+                                onclick="promptNickname('{{.ICCID}}', '{{if .ProfileNickname}}{{.ProfileNickname}}{{else}}{{.ProfileName}}{{end}}')">
+                            {{call $.T "profiles.nickname"}}
+                        </button>
+                        <button class="btn btn-sm btn-danger"
+                                hx-post="/api/profiles/{{.ICCID}}/delete"
+                                hx-target="#profiles-content"
+                                hx-confirm="{{call $.T "profiles.confirm_delete"}}">
+                            {{call $.T "profiles.delete"}}
+                        </button>
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+    {{end}}
+
+    <div class="actions-bar">
+        <button class="btn"
+                hx-get="/api/profiles"
+                hx-target="#profiles-content">
+            {{call .T "common.refresh"}}
+        </button>
+    </div>
+
+    <script>
+    function promptNickname(iccid, current) {
+        var nickname = prompt('{{call .T "profiles.nickname_prompt"}}', current);
+        if (nickname !== null) {
+            htmx.ajax('POST', '/api/profiles/' + iccid + '/nickname', {
+                target: '#profiles-content',
+                values: {nickname: nickname}
+            });
+        }
+    }
+    </script>
+</div>{{end}}
+
+{{define "profiles_error"}}<div id="profiles-content">
+    <div class="alert alert-danger">{{.Data}}</div>
+    <button class="btn btn-primary"
+            hx-get="/api/profiles"
+            hx-target="#profiles-content">
+        {{call .T "common.retry"}}
+    </button>
+</div>{{end}}
+
+{{define "alert"}}<div class="alert alert-{{.AlertType}}">{{.Message}}</div>{{end}}

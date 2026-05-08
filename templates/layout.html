@@ -1,0 +1,38 @@
+{{define "layout"}}<!DOCTYPE html>
+<html lang="{{.Lang}}" data-theme="{{.Theme}}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{call .T "app.title"}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/htmx.min.js"></script>
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="header-left">
+                <h1 class="logo">{{call .T "app.title"}}</h1>
+            </div>
+            <div class="header-right">
+                {{template "lang_switcher" .}}
+                {{template "theme_switcher" .}}
+            </div>
+        </header>
+
+        {{template "nav" .}}
+
+        <div id="connectivity-status"
+             hx-get="/api/connectivity"
+             hx-trigger="load, every 30s"
+             hx-swap="innerHTML"></div>
+
+        <main class="content" id="main-content">
+            {{.PageContent}}
+        </main>
+
+        <footer class="footer">
+            <span>Hermes eUICC Web v{{.Version}}</span>
+        </footer>
+    </div>
+</body>
+</html>{{end}}

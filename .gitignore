@@ -1,0 +1,4 @@
+hermes-euicc-web
+build/
+*.exe
+.DS_Store

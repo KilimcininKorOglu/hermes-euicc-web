@@ -1,0 +1,11 @@
+{{define "connectivity_banner"}}<div id="connectivity-status">
+    {{if .Data}}
+    <div class="connectivity-badge connectivity-online">{{call .T "connectivity.online"}}</div>
+    {{else}}
+    <div class="connectivity-badge connectivity-offline">{{call .T "connectivity.offline"}}</div>
+    {{end}}
+</div>{{end}}
+
+{{define "storage_warning"}}<div class="alert alert-warning" style="margin-bottom:16px">
+    {{call .T "download.storage_low"}} ({{.Data}} bytes)
+</div>{{end}}

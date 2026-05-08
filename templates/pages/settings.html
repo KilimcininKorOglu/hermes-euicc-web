@@ -1,0 +1,160 @@
+{{define "settings"}}<div class="page">
+    <h2>{{call .T "settings.title"}}</h2>
+    <div id="settings-content"
+         hx-get="/api/settings"
+         hx-trigger="load">
+        <div class="placeholder">
+            <span class="spinner"></span> {{call .T "settings.loading"}}
+        </div>
+    </div>
+</div>{{end}}
+
+{{define "settings_form_body"}}
+        <div class="card">
+            <div class="card-title">{{call .T "settings.connection"}}</div>
+
+            <div class="form-group">
+                <label class="form-label" for="driver">{{call .T "settings.driver"}}</label>
+                <select id="driver" name="driver" class="form-select">
+                    {{$d := (.Data).Driver}}
+                    <option value="auto"{{if eq $d "auto"}} selected{{end}}>{{call .T "settings.driver_auto"}}</option>
+                    <option value="qmi"{{if eq $d "qmi"}} selected{{end}}>QMI</option>
+                    <option value="mbim"{{if eq $d "mbim"}} selected{{end}}>MBIM</option>
+                    <option value="at"{{if eq $d "at"}} selected{{end}}>AT</option>
+                    <option value="ccid"{{if eq $d "ccid"}} selected{{end}}>CCID</option>
+                </select>
+                <div class="form-hint">{{call .T "settings.driver_hint"}}</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="device">{{call .T "settings.device"}}</label>
+                <input type="text" id="device" name="device" class="form-input"
+                       value="{{(.Data).Device}}" placeholder="/dev/cdc-wdm0">
+                <div class="form-hint">{{call .T "settings.device_hint"}}</div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group form-half">
+                    <label class="form-label" for="slot">{{call .T "settings.slot"}}</label>
+                    <input type="number" id="slot" name="slot" class="form-input"
+                           value="{{(.Data).Slot}}" min="1" max="4">
+                </div>
+                <div class="form-group form-half">
+                    <label class="form-label" for="timeout">{{call .T "settings.timeout"}}</label>
+                    <input type="number" id="timeout" name="timeout" class="form-input"
+                           value="{{(.Data).Timeout}}" min="5" max="300">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">{{call .T "settings.general"}}</div>
+
+            <div class="form-group">
+                <label class="toggle-label">
+                    <input type="checkbox" name="enable_output_logs"{{if (.Data).EnableOutputLogs}} checked{{end}}>
+                    {{call .T "settings.enable_output_logs"}}
+                </label>
+                <div class="form-hint">{{call .T "settings.enable_output_logs_hint"}}</div>
+            </div>
+
+            <div class="form-group">
+                <label class="toggle-label">
+                    <input type="checkbox" name="auto_notification"{{if (.Data).AutoNotification}} checked{{end}}>
+                    {{call .T "settings.auto_notification"}}
+                </label>
+                <div class="form-hint">{{call .T "settings.auto_notification_hint"}}</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">{{call .T "settings.reboot"}}</div>
+
+            <div class="form-group">
+                <label class="form-label" for="reboot_method">{{call .T "settings.reboot_method"}}</label>
+                <select id="reboot_method" name="reboot_method" class="form-select" onchange="toggleRebootFields()">
+                    {{$rm := (.Data).RebootMethod}}
+                    <option value="none"{{if eq $rm "none"}} selected{{end}}>{{call .T "settings.reboot_none"}}</option>
+                    <option value="at"{{if eq $rm "at"}} selected{{end}}>AT</option>
+                    <option value="qmi"{{if eq $rm "qmi"}} selected{{end}}>QMI</option>
+                    <option value="mbim"{{if eq $rm "mbim"}} selected{{end}}>MBIM</option>
+                    <option value="custom"{{if eq $rm "custom"}} selected{{end}}>{{call .T "settings.reboot_custom"}}</option>
+                </select>
+            </div>
+
+            <div id="reboot-at-fields" class="reboot-fields">
+                <div class="form-group">
+                    <label class="form-label">{{call .T "settings.reboot_at_command"}}</label>
+                    <input type="text" name="reboot_at_command" class="form-input"
+                           value="{{(.Data).RebootATCommand}}" placeholder="AT+CFUN=1,1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">{{call .T "settings.reboot_at_device"}}</label>
+                    <input type="text" name="reboot_at_device" class="form-input"
+                           value="{{(.Data).RebootATDevice}}" placeholder="/dev/ttyUSB2">
+                </div>
+            </div>
+
+            <div id="reboot-qmi-fields" class="reboot-fields">
+                <div class="form-group">
+                    <label class="form-label">{{call .T "settings.reboot_qmi_device"}}</label>
+                    <input type="text" name="reboot_qmi_device" class="form-input"
+                           value="{{(.Data).RebootQMIDevice}}" placeholder="/dev/cdc-wdm0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">{{call .T "settings.reboot_qmi_slot"}}</label>
+                    <input type="number" name="reboot_qmi_slot" class="form-input"
+                           value="{{(.Data).RebootQMISlot}}" min="1" max="4">
+                </div>
+            </div>
+
+            <div id="reboot-mbim-fields" class="reboot-fields">
+                <div class="form-group">
+                    <label class="form-label">{{call .T "settings.reboot_mbim_device"}}</label>
+                    <input type="text" name="reboot_mbim_device" class="form-input"
+                           value="{{(.Data).RebootMBIMDevice}}" placeholder="/dev/cdc-wdm0">
+                </div>
+            </div>
+
+            <div id="reboot-custom-fields" class="reboot-fields">
+                <div class="form-group">
+                    <label class="form-label">{{call .T "settings.reboot_custom_cmd"}}</label>
+                    <input type="text" name="reboot_custom_command" class="form-input"
+                           value="{{(.Data).RebootCustomCommand}}" placeholder="/usr/bin/reboot-modem.sh">
+                    <div class="form-hint">{{call .T "settings.reboot_custom_hint"}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{{call .T "common.save"}}</button>
+            <button type="button" class="btn"
+                    hx-get="/api/settings"
+                    hx-target="#settings-content">
+                {{call .T "common.cancel"}}
+            </button>
+        </div>
+
+    <script>
+    function toggleRebootFields() {
+        document.querySelectorAll('.reboot-fields').forEach(function(el) { el.style.display = 'none'; });
+        var method = document.getElementById('reboot_method').value;
+        var target = document.getElementById('reboot-' + method + '-fields');
+        if (target) target.style.display = 'block';
+    }
+    toggleRebootFields();
+    </script>
+{{end}}
+
+{{define "settings_form"}}<div id="settings-content">
+    <form hx-post="/api/settings" hx-target="#settings-content">
+        {{template "settings_form_body" .}}
+    </form>
+</div>{{end}}
+
+{{define "settings_saved"}}<div id="settings-content">
+    <div class="alert alert-success">{{call .T "settings.saved"}}</div>
+    <form hx-post="/api/settings" hx-target="#settings-content">
+        {{template "settings_form_body" .}}
+    </form>
+</div>{{end}}

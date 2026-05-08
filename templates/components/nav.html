@@ -1,0 +1,22 @@
+{{define "nav"}}<nav class="nav">
+    <a href="/" class="nav-item{{if eq .ActivePage "info"}} active{{end}}"
+       hx-get="/" hx-target="#main-content" hx-push-url="true">
+        {{call .T "nav.info"}}
+    </a>
+    <a href="/profiles" class="nav-item{{if eq .ActivePage "profiles"}} active{{end}}"
+       hx-get="/profiles" hx-target="#main-content" hx-push-url="true">
+        {{call .T "nav.profiles"}}
+    </a>
+    <a href="/download" class="nav-item{{if eq .ActivePage "download"}} active{{end}}"
+       hx-get="/download" hx-target="#main-content" hx-push-url="true">
+        {{call .T "nav.download"}}
+    </a>
+    <a href="/notifications" class="nav-item{{if eq .ActivePage "notifications"}} active{{end}}"
+       hx-get="/notifications" hx-target="#main-content" hx-push-url="true">
+        {{call .T "nav.notifications"}}
+    </a>
+    <a href="/settings" class="nav-item{{if eq .ActivePage "settings"}} active{{end}}"
+       hx-get="/settings" hx-target="#main-content" hx-push-url="true">
+        {{call .T "nav.settings"}}
+    </a>
+</nav>{{end}}
