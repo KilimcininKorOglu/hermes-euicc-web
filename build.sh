@@ -269,3 +269,21 @@ echo -e "  ${GREEN}Binaries:    ${BIN_COUNT}${NC}"
 IPK_COUNT=$(ls -1 ${BUILD_DIR}/${PKG_NAME}_*.ipk 2>/dev/null | wc -l)
 [ $IPK_COUNT -gt 0 ] && echo -e "  ${GREEN}IPK packages: ${IPK_COUNT}${NC}"
 echo ""
+
+# =============================================================================
+# Optional: publish IPKs to the shared openwrt-packages feed
+# Enable with:  PUBLISH_FEED=1 ./build.sh
+# Routes each IPK into the matching arch dir and regenerates indexes; it does NOT
+# commit or push (review, then commit & push inside the feed repo yourself).
+# =============================================================================
+if [ "${PUBLISH_FEED:-0}" = "1" ]; then
+    FEED_DIR="${SCRIPT_DIR}/../openwrt-packages"
+    if [ -x "${FEED_DIR}/import.sh" ]; then
+        echo -e "${BLUE}Publishing IPKs to shared feed: ${FEED_DIR}${NC}"
+        "${FEED_DIR}/import.sh" "${BUILD_DIR}"/${PKG_NAME}_*.ipk || true
+        echo -e "${YELLOW}Feed updated. Review, then commit & push in ${FEED_DIR}.${NC}"
+    else
+        echo -e "${YELLOW}PUBLISH_FEED=1 but ${FEED_DIR}/import.sh not found; skipping feed publish.${NC}"
+    fi
+    echo ""
+fi
