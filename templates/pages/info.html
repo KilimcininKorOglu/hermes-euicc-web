@@ -127,10 +127,29 @@
         htmx.ajax('POST', '/api/info/set-default-dp', {target: '#set-dp-result', values: {address: addr}});
     }
     function confirmMemoryReset() {
-        if (!confirm('{{call .T "info.memory_reset_confirm1"}}')) return;
-        var input = prompt('{{call .T "info.memory_reset_confirm2"}}');
-        if (input !== 'RESET') return;
-        htmx.ajax('POST', '/api/info/memory-reset', {target: '#memory-reset-result'});
+        Swal.fire({
+            title: '{{call .T "info.memory_reset_confirm1"}}',
+            text: '{{call .T "info.memory_reset_warning"}}',
+            icon: 'warning',
+            input: 'text',
+            inputLabel: '{{call .T "info.memory_reset_confirm2"}}',
+            inputPlaceholder: 'RESET',
+            showCancelButton: true,
+            reverseButtons: true,
+            confirmButtonText: window.SWAL_I18N.confirm,
+            cancelButtonText: window.SWAL_I18N.cancel,
+            confirmButtonColor: '#dc3545',
+            preConfirm: function (value) {
+                if (value !== 'RESET') {
+                    Swal.showValidationMessage('{{call .T "info.memory_reset_confirm2"}}');
+                }
+                return value;
+            }
+        }).then(function (result) {
+            if (result.isConfirmed && result.value === 'RESET') {
+                htmx.ajax('POST', '/api/info/memory-reset', {target: '#memory-reset-result'});
+            }
+        });
     }
     </script>
 </div>{{end}}

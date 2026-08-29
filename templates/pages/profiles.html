@@ -100,13 +100,24 @@
 
     <script>
     function promptNickname(iccid, current) {
-        var nickname = prompt('{{call .T "profiles.nickname_prompt"}}', current);
-        if (nickname !== null) {
-            htmx.ajax('POST', '/api/profiles/' + iccid + '/nickname', {
-                target: '#profiles-content',
-                values: {nickname: nickname}
-            });
-        }
+        Swal.fire({
+            title: '{{call .T "profiles.nickname"}}',
+            input: 'text',
+            inputLabel: '{{call .T "profiles.nickname_prompt"}}',
+            inputValue: current || '',
+            showCancelButton: true,
+            reverseButtons: true,
+            confirmButtonText: window.SWAL_I18N.confirm,
+            cancelButtonText: window.SWAL_I18N.cancel,
+            confirmButtonColor: '#0d6efd'
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                htmx.ajax('POST', '/api/profiles/' + iccid + '/nickname', {
+                    target: '#profiles-content',
+                    values: {nickname: result.value}
+                });
+            }
+        });
     }
     </script>
 </div>{{end}}

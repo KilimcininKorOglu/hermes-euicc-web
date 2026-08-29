@@ -12,6 +12,7 @@
     "common.retry": "Retry",
     "common.save": "Save",
     "common.cancel": "Cancel",
+    "common.confirm": "Confirm",
     "info.title": "eSIM Information",
     "info.loading": "Loading chip information...",
     "info.chip_info": "Chip Information",

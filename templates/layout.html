@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{call .T "app.title"}}</title>
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <link rel="stylesheet" href="/static/css/sweetalert2.min.css">
     <link rel="stylesheet" href="/static/css/style.css">
+    <script>window.SWAL_I18N = {confirm: "{{call .T "common.confirm"}}", cancel: "{{call .T "common.cancel"}}"};</script>
     <script src="/static/js/htmx.min.js"></script>
+    <script src="/static/js/sweetalert2.min.js"></script>
+    <script src="/static/js/app.js" defer></script>
 </head>
 <body>
     <div class="app">

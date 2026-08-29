@@ -12,6 +12,7 @@
     "common.retry": "Tekrar Dene",
     "common.save": "Kaydet",
     "common.cancel": "İptal",
+    "common.confirm": "Onayla",
     "info.title": "eSIM Bilgileri",
     "info.loading": "Çip bilgileri yükleniyor...",
     "info.chip_info": "Çip Bilgileri",
