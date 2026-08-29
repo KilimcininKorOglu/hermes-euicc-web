@@ -20,6 +20,21 @@
         );
     }
 
+    // Keep the active nav item in sync with the URL. htmx swaps only
+    // #main-content, so the nav in the layout is never re-rendered on
+    // navigation; update the highlight from the current pathname instead.
+    function syncActiveNav() {
+        var path = window.location.pathname;
+        var items = document.querySelectorAll(".nav-item");
+        for (var i = 0; i < items.length; i++) {
+            var href = items[i].getAttribute("href");
+            items[i].classList.toggle("active", href === path);
+        }
+    }
+
+    document.addEventListener("htmx:pushedIntoHistory", syncActiveNav);
+    window.addEventListener("popstate", syncActiveNav);
+
     // Intercept htmx's native confirm and present SweetAlert2 instead.
     document.addEventListener("htmx:confirm", function (evt) {
         var question = evt.detail.question;
