@@ -59,6 +59,12 @@ func preferencesMiddleware(i18n *I18n, next http.Handler) http.Handler {
 			lang = detectBrowserLang(r, i18n)
 		}
 
+		// API responses carry live eUICC/state data (some non-deterministic,
+		// e.g. /api/info/challenge); never cache them.
+		if strings.HasPrefix(r.URL.Path, "/api/") {
+			w.Header().Set("Cache-Control", "no-store")
+		}
+
 		ctx := context.WithValue(r.Context(), ctxTheme, theme)
 		ctx = context.WithValue(ctx, ctxLang, lang)
 		next.ServeHTTP(w, r.WithContext(ctx))

@@ -10,6 +10,9 @@ import (
 	"io/fs"
 	"log/slog"
 	"net/http"
+	"path"
+	"strings"
+	"time"
 )
 
 //go:embed static
@@ -19,11 +22,12 @@ var staticFS embed.FS
 var templatesFS embed.FS
 
 type Server struct {
-	mux      *http.ServeMux
-	i18n     *I18n
-	hermes   *HermesClient
-	tmpl     *template.Template
-	handler  http.Handler
+	mux     *http.ServeMux
+	i18n    *I18n
+	hermes  *HermesClient
+	tmpl    *template.Template
+	handler http.Handler
+	assets  map[string]staticAsset
 }
 
 type HermesConfig struct {
@@ -46,10 +50,18 @@ type PageData struct {
 }
 
 func NewServer(i18n *I18n, hermes *HermesClient) *Server {
+	staticSub, _ := fs.Sub(staticFS, "static")
+	assets, err := buildStaticAssets(staticSub)
+	if err != nil {
+		slog.Error("failed to load static assets", "error", err)
+		panic(err)
+	}
+
 	s := &Server{
 		mux:    http.NewServeMux(),
 		i18n:   i18n,
 		hermes: hermes,
+		assets: assets,
 	}
 
 	s.parseTemplates()
@@ -58,14 +70,24 @@ func NewServer(i18n *I18n, hermes *HermesClient) *Server {
 	return s
 }
 
+// assetURL returns the cache-busted URL for a static asset path (e.g. "js/app.js"),
+// appending ?v=<hash> so a changed file always gets a fresh URL.
+func (s *Server) assetURL(p string) string {
+	if a, ok := s.assets[p]; ok {
+		return "/static/" + p + "?v=" + a.version
+	}
+	return "/static/" + p
+}
+
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.handler.ServeHTTP(w, r)
 }
 
 func (s *Server) parseTemplates() {
 	funcMap := template.FuncMap{
-		"t":  func(key string) template.HTML { return "" },
-		"eq": func(a, b string) bool { return a == b },
+		"t":     func(key string) template.HTML { return "" },
+		"eq":    func(a, b string) bool { return a == b },
+		"asset": s.assetURL,
 	}
 
 	tmpl, err := template.New("").Funcs(funcMap).ParseFS(templatesFS,
@@ -81,8 +103,7 @@ func (s *Server) parseTemplates() {
 }
 
 func (s *Server) registerRoutes() {
-	staticSub, _ := fs.Sub(staticFS, "static")
-	s.mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.FS(staticSub))))
+	s.mux.HandleFunc("GET /static/", s.handleStatic)
 
 	s.mux.HandleFunc("GET /", s.handlePage("info"))
 	s.mux.HandleFunc("GET /profiles", s.handlePage("profiles"))
@@ -120,6 +141,26 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("GET /api/storage-check", s.handleAPIStorageCheck)
 }
 
+// handleStatic serves an embedded asset from the precomputed table, with an
+// ETag/Cache-Control policy chosen at startup and 304 revalidation support.
+func (s *Server) handleStatic(w http.ResponseWriter, r *http.Request) {
+	p := strings.TrimPrefix(r.URL.Path, "/static/")
+	a, ok := s.assets[p]
+	if !ok {
+		http.NotFound(w, r)
+		return
+	}
+	w.Header().Set("Cache-Control", a.cacheControl)
+	if a.etag != "" {
+		w.Header().Set("ETag", a.etag)
+		if matchETag(r.Header.Get("If-None-Match"), a.etag) {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+	}
+	http.ServeContent(w, r, path.Base(p), time.Time{}, bytes.NewReader(a.data))
+}
+
 func (s *Server) handlePage(page string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if page == "info" && r.URL.Path != "/" {
@@ -145,6 +186,10 @@ func (s *Server) handlePage(page string) http.HandlerFunc {
 		})
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		// Pages depend on the theme and lang cookies, so never cache them in a
+		// shared cache and always revalidate before reuse.
+		w.Header().Set("Cache-Control", "private, no-cache")
+		w.Header().Set("Vary", "Cookie")
 
 		if isHTMX {
 			if err := tmpl.ExecuteTemplate(w, page, data); err != nil {
