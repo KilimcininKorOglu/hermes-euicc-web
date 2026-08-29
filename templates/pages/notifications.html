@@ -41,7 +41,7 @@
                     </td>
                     <td class="text-sm">{{.Address}}</td>
                     <td class="actions-cell">
-                        <button class="btn btn-sm btn-primary"
+                        <button class="btn btn-sm btn-success"
                                 hx-post="/api/notifications/{{.SequenceNumber}}/handle"
                                 hx-target="#notifications-content"
                                 hx-confirm="{{call $.T "notifications.confirm_handle"}}">
@@ -62,13 +62,13 @@
     {{end}}
 
     <div class="actions-bar">
-        <button class="btn"
+        <button class="btn btn-primary"
                 hx-get="/api/notifications"
                 hx-target="#notifications-content">
             {{call .T "common.refresh"}}
         </button>
         {{if $notifications}}
-        <button class="btn btn-primary"
+        <button class="btn btn-success"
                 hx-post="/api/notifications/process-all"
                 hx-target="#notifications-content"
                 hx-confirm="{{call .T "notifications.confirm_process_all"}}">

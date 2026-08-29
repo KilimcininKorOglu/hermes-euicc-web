@@ -217,6 +217,34 @@ body {
     border-color: var(--color-danger);
 }
 
+.btn-success {
+    background-color: var(--color-success);
+    color: #ffffff;
+    border-color: var(--color-success);
+}
+
+/* Keep semantic buttons colored on hover; override the neutral .btn:hover. */
+.btn-success:hover,
+.btn-danger:hover,
+.btn-warning:hover {
+    filter: brightness(0.92);
+}
+
+.btn-success:hover {
+    background-color: var(--color-success);
+    border-color: var(--color-success);
+}
+
+.btn-danger:hover {
+    background-color: var(--color-danger);
+    border-color: var(--color-danger);
+}
+
+.btn-warning:hover {
+    background-color: var(--color-warning);
+    border-color: var(--color-warning);
+}
+
 .btn-icon {
     display: inline-flex;
     align-items: center;

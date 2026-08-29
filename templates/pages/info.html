@@ -90,7 +90,7 @@
             <label class="form-label">{{call .T "info.set_default_dp"}}</label>
             <div class="inline-form">
                 <input type="text" id="default-dp-address" class="form-input" placeholder="smdp.example.com">
-                <button class="btn btn-primary"
+                <button class="btn btn-success"
                         onclick="setDefaultDP()"
                         id="set-dp-btn">
                     {{call .T "common.save"}}
@@ -101,7 +101,7 @@
 
         <div class="form-group">
             <label class="form-label">{{call .T "info.challenge"}}</label>
-            <button class="btn"
+            <button class="btn btn-primary"
                     hx-get="/api/info/challenge"
                     hx-target="#challenge-result">
                 {{call .T "info.get_challenge"}}

@@ -9,11 +9,11 @@
     <div class="card">
         <div class="card-title">{{call .T "download.qr_title"}}</div>
         <div class="qr-actions">
-            <label class="btn" for="qr-file-input">
+            <label class="btn btn-primary" for="qr-file-input">
                 {{call .T "download.qr_upload"}}
                 <input type="file" id="qr-file-input" accept="image/*" onchange="handleQRFile(this)" style="display:none">
             </label>
-            <button class="btn" id="qr-camera-btn" onclick="startCamera()">
+            <button class="btn btn-primary" id="qr-camera-btn" onclick="startCamera()">
                 {{call .T "download.qr_camera"}}
             </button>
             <button class="btn btn-danger" id="qr-camera-stop-btn" onclick="stopCamera()" style="display:none">
@@ -53,7 +53,7 @@
                        class="form-input" placeholder="{{call .T "download.confirmation_code_hint"}}">
             </div>
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-success">
                     <span class="htmx-indicator" id="download-spinner"><span class="spinner"></span></span>
                     {{call .T "download.submit"}}
                 </button>
@@ -118,7 +118,7 @@
                         <td>
                             <form hx-post="/api/download" hx-target="#download-result" style="display:inline">
                                 <input type="hidden" name="activation_code" value="LPA:1${{.Address}}${{.EventID}}">
-                                <button type="submit" class="btn btn-sm btn-primary">
+                                <button type="submit" class="btn btn-sm btn-success">
                                     {{call $.T "download.download_this"}}
                                 </button>
                             </form>

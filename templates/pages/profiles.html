@@ -58,21 +58,21 @@
                     </td>
                     <td class="actions-cell">
                         {{if eq .ProfileState 1}}
-                        <button class="btn btn-sm"
+                        <button class="btn btn-sm btn-warning"
                                 hx-post="/api/profiles/{{.ICCID}}/disable"
                                 hx-target="#profiles-content"
                                 hx-confirm="{{call $.T "profiles.confirm_disable"}}">
                             {{call $.T "profiles.disable"}}
                         </button>
                         {{else}}
-                        <button class="btn btn-sm btn-primary"
+                        <button class="btn btn-sm btn-success"
                                 hx-post="/api/profiles/{{.ICCID}}/enable"
                                 hx-target="#profiles-content"
                                 hx-confirm="{{call $.T "profiles.confirm_enable"}}">
                             {{call $.T "profiles.enable"}}
                         </button>
                         {{end}}
-                        <button class="btn btn-sm"
+                        <button class="btn btn-sm btn-warning"
                                 onclick="promptNickname('{{.ICCID}}', '{{if .ProfileNickname}}{{.ProfileNickname}}{{else}}{{.ProfileName}}{{end}}')">
                             {{call $.T "profiles.nickname"}}
                         </button>
@@ -91,7 +91,7 @@
     {{end}}
 
     <div class="actions-bar">
-        <button class="btn"
+        <button class="btn btn-primary"
                 hx-get="/api/profiles"
                 hx-target="#profiles-content">
             {{call .T "common.refresh"}}
