@@ -26,7 +26,12 @@ func themeFromContext(ctx context.Context) string {
 	if v, ok := ctx.Value(ctxTheme).(string); ok {
 		return v
 	}
-	return "light"
+	return "system"
+}
+
+// isValidTheme reports whether v is an accepted theme preference.
+func isValidTheme(v string) bool {
+	return v == "light" || v == "dark" || v == "system"
 }
 
 func langFromContext(ctx context.Context) string {
@@ -38,9 +43,9 @@ func langFromContext(ctx context.Context) string {
 
 func preferencesMiddleware(i18n *I18n, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		theme := "light"
+		theme := "system"
 		if c, err := r.Cookie(cookieTheme); err == nil {
-			if c.Value == "dark" || c.Value == "light" {
+			if isValidTheme(c.Value) {
 				theme = c.Value
 			}
 		}
@@ -65,7 +70,7 @@ func detectBrowserLang(r *http.Request, i18n *I18n) string {
 	if accept == "" {
 		return defaultLang
 	}
-	for _, part := range strings.Split(accept, ",") {
+	for part := range strings.SplitSeq(accept, ",") {
 		tag := strings.TrimSpace(strings.SplitN(part, ";", 2)[0])
 		if i18n.IsSupported(tag) {
 			return tag

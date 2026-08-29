@@ -17,24 +17,50 @@
     --color-nav-active-text: #ffffff;
     --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     --radius: 6px;
+    --content-max: 960px;
+    --content-pad: 20px;
+    /* Horizontal gutter that aligns full-width bars with the centered content */
+    --edge: max(var(--content-pad), calc((100% - var(--content-max)) / 2 + var(--content-pad)));
 }
 
+/* Dark palette: neutral grays, not blue-tinted */
 [data-theme="dark"] {
-    --color-bg: #1a1a2e;
-    --color-bg-secondary: #16213e;
-    --color-bg-tertiary: #0f3460;
-    --color-text: #e4e6eb;
-    --color-text-secondary: #a0a3a8;
-    --color-border: #2d3748;
+    --color-bg: #121212;
+    --color-bg-secondary: #1c1c1c;
+    --color-bg-tertiary: #2b2b2b;
+    --color-text: #e6e6e6;
+    --color-text-secondary: #9aa0a6;
+    --color-border: #333333;
     --color-primary: #4a9eff;
-    --color-primary-hover: #3a8eef;
+    --color-primary-hover: #6bb0ff;
     --color-primary-text: #ffffff;
     --color-success: #2dce89;
     --color-danger: #f5365c;
     --color-warning: #ffd600;
     --color-nav-active: #4a9eff;
     --color-nav-active-text: #ffffff;
-    --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* System theme: follow OS preference when no explicit light choice is set */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --color-bg: #121212;
+        --color-bg-secondary: #1c1c1c;
+        --color-bg-tertiary: #2b2b2b;
+        --color-text: #e6e6e6;
+        --color-text-secondary: #9aa0a6;
+        --color-border: #333333;
+        --color-primary: #4a9eff;
+        --color-primary-hover: #6bb0ff;
+        --color-primary-text: #ffffff;
+        --color-success: #2dce89;
+        --color-danger: #f5365c;
+        --color-warning: #ffd600;
+        --color-nav-active: #4a9eff;
+        --color-nav-active-text: #ffffff;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
 }
 
 /* Reset */
@@ -64,7 +90,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 20px;
+    padding-block: 12px;
+    padding-inline: var(--edge);
     background-color: var(--color-bg-secondary);
     border-bottom: 1px solid var(--color-border);
 }
@@ -91,7 +118,8 @@ body {
 .nav {
     display: flex;
     gap: 2px;
-    padding: 0 20px;
+    padding-block: 0;
+    padding-inline: var(--edge);
     background-color: var(--color-bg-secondary);
     border-bottom: 1px solid var(--color-border);
     overflow-x: auto;

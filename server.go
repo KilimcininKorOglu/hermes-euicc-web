@@ -171,8 +171,8 @@ func (s *Server) handlePage(page string) http.HandlerFunc {
 
 func (s *Server) handleSetTheme(w http.ResponseWriter, r *http.Request) {
 	theme := r.FormValue("theme")
-	if theme != "dark" && theme != "light" {
-		theme = "light"
+	if !isValidTheme(theme) {
+		theme = "system"
 	}
 	setPreferenceCookie(w, cookieTheme, theme)
 	w.Header().Set("HX-Refresh", "true")
