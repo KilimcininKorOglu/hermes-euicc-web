@@ -81,6 +81,8 @@ body {
 /* App Layout */
 .app {
     min-height: 100vh;
+    max-width: var(--content-max);
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
 }
@@ -603,6 +605,7 @@ body {
     .header {
         flex-wrap: wrap;
         gap: 8px;
+        padding-inline: 12px;
     }
 
     .nav {
