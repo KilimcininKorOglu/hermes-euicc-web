@@ -18,7 +18,7 @@ var version = "0.1.0"
 func main() {
 	port := flag.Int("port", 9090, "HTTP server port")
 	bind := flag.String("bind", "0.0.0.0", "Bind address")
-	hermesBinary := flag.String("hermes-binary", "hermes-euicc", "Path to hermes-euicc binary")
+	hermesBinary := flag.String("hermes-binary", "hermes-euicc-go", "Path to hermes-euicc-go CLI binary")
 	hermesDriver := flag.String("hermes-driver", "", "Driver override (qmi/mbim/at/ccid)")
 	hermesDevice := flag.String("hermes-device", "", "Device path override")
 	hermesSlot := flag.Int("hermes-slot", 0, "SIM slot override")
