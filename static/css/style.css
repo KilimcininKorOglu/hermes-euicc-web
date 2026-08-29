@@ -200,49 +200,40 @@ body {
     background-color: var(--color-bg-tertiary);
 }
 
+/* Semantic buttons use fixed dark tones (not the theme --color-* accents, which
+   are light on dark and leave white text unreadable). White text stays AA-legible
+   on all four in both themes. */
 .btn-primary {
-    background-color: var(--color-primary);
-    color: var(--color-primary-text);
-    border-color: var(--color-primary);
+    background-color: #0b5ed7;
+    color: #ffffff;
+    border-color: #0b5ed7;
 }
 
 .btn-primary:hover {
-    background-color: var(--color-primary-hover);
-    border-color: var(--color-primary-hover);
+    background-color: #094db0;
+    border-color: #094db0;
 }
 
 .btn-danger {
-    background-color: var(--color-danger);
+    background-color: #b02a37;
     color: #ffffff;
-    border-color: var(--color-danger);
-}
-
-.btn-success {
-    background-color: var(--color-success);
-    color: #ffffff;
-    border-color: var(--color-success);
-}
-
-/* Keep semantic buttons colored on hover; override the neutral .btn:hover. */
-.btn-success:hover,
-.btn-danger:hover,
-.btn-warning:hover {
-    filter: brightness(0.92);
-}
-
-.btn-success:hover {
-    background-color: var(--color-success);
-    border-color: var(--color-success);
+    border-color: #b02a37;
 }
 
 .btn-danger:hover {
-    background-color: var(--color-danger);
-    border-color: var(--color-danger);
+    background-color: #922530;
+    border-color: #922530;
 }
 
-.btn-warning:hover {
-    background-color: var(--color-warning);
-    border-color: var(--color-warning);
+.btn-success {
+    background-color: #146c43;
+    color: #ffffff;
+    border-color: #146c43;
+}
+
+.btn-success:hover {
+    background-color: #105a38;
+    border-color: #105a38;
 }
 
 .btn-icon {
@@ -418,9 +409,14 @@ body {
 }
 
 .btn-warning {
-    background-color: var(--color-warning);
+    background-color: #d39e00;
     color: #000000;
-    border-color: var(--color-warning);
+    border-color: #d39e00;
+}
+
+.btn-warning:hover {
+    background-color: #b98900;
+    border-color: #b98900;
 }
 
 /* QR Scanner */
